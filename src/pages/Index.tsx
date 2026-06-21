@@ -3,10 +3,11 @@ import Header from "@/components/Header";
 import ArticleCard from "@/components/ArticleCard";
 import HeroSection from "@/components/HeroSection";
 import IntroSection from "@/components/IntroSection";
-import { articles } from "@/data/articles";
+import NewsletterForm from "@/components/NewsletterForm";
+import { usePublishedArticles, formatDateEs } from "@/lib/articles";
 
 const Index = () => {
-  const featuredArticles = articles.slice(0, 6);
+  const { data: articles = [], isLoading } = usePublishedArticles({ limit: 6 });
 
   return (
     <div className="min-h-screen bg-background animate-fade-in">
@@ -14,7 +15,6 @@ const Index = () => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <HeroSection />
-
         <IntroSection />
 
         <section id="articles" className="py-12">
@@ -25,31 +25,38 @@ const Index = () => {
             </a>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredArticles.map((article, index) => (
-              <div key={article.id} className={`animate-slide-up stagger-${Math.min(index + 1, 6)}`}>
-                <ArticleCard {...article} size="small" />
-              </div>
-            ))}
-          </div>
+          {isLoading ? (
+            <p className="text-center text-muted-foreground py-12">Cargando…</p>
+          ) : articles.length === 0 ? (
+            <p className="text-center text-muted-foreground py-12">
+              Todavía no hay artículos publicados.{" "}
+              <Link to="/admin" className="underline">Crea el primero</Link>.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {articles.map((a, i) => (
+                <div key={a.id} className={`animate-slide-up stagger-${Math.min(i + 1, 6)}`}>
+                  <ArticleCard
+                    slug={a.slug}
+                    title={a.title}
+                    category={a.category?.name ?? ""}
+                    date={formatDateEs(a.published_at)}
+                    image={a.cover_image_url ?? ""}
+                    size="small"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </section>
 
-        <section className="my-20 rounded-[2.5rem] bg-card p-12 md:p-16 text-center animate-scale-in">
+        <section id="newsletter" className="my-20 rounded-[2.5rem] bg-card p-12 md:p-16 text-center animate-scale-in">
           <div className="max-w-2xl mx-auto space-y-8">
             <h2 className="text-4xl md:text-5xl tracking-tight">Mantente inspirado.</h2>
             <p className="text-xl text-muted-foreground leading-relaxed">
               Suscríbete y recibe nuestros últimos artículos e ideas directamente en tu correo.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Tu correo electrónico"
-                className="flex-1 px-6 py-4 rounded-full border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring transition-all"
-              />
-              <button className="px-10 py-4 rounded-full bg-primary text-primary-foreground font-medium hover:bg-primary/90 hover:scale-105 transition-all">
-                Suscribirme
-              </button>
-            </div>
+            <NewsletterForm source="home" />
           </div>
         </section>
       </main>
@@ -79,6 +86,7 @@ const Index = () => {
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><Link to="/style-guide" className="hover:text-accent transition-colors">Guía de estilo</Link></li>
                 <li><a href="#newsletter" className="hover:text-accent transition-colors">Newsletter</a></li>
+                <li><Link to="/admin" className="hover:text-accent transition-colors">Admin</Link></li>
               </ul>
             </div>
             <div>

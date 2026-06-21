@@ -2,15 +2,16 @@ import { Link } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
 
 interface ArticleCardProps {
-  id: string;
+  slug: string;
   title: string;
   category: string;
   date: string;
   image: string;
   size?: "small" | "large";
+  index?: string | number;
 }
 
-const ArticleCard = ({ id, title, category, date, image, size = "small" }: ArticleCardProps) => {
+const ArticleCard = ({ slug, title, category, date, image, size = "small", index }: ArticleCardProps) => {
   const getCategoryClass = (cat: string) => {
     const normalized = cat.toLowerCase();
     if (normalized.includes("financ")) return "tag-financing";
@@ -25,7 +26,7 @@ const ArticleCard = ({ id, title, category, date, image, size = "small" }: Artic
 
   return (
     <Link
-      to={`/article/${id}`}
+      to={`/article/${slug}`}
       className={`group relative block rounded-[2.5rem] overflow-hidden card-hover ${
         size === "large" ? "col-span-1 md:col-span-2 row-span-2" : ""
       }`}
@@ -34,11 +35,10 @@ const ArticleCard = ({ id, title, category, date, image, size = "small" }: Artic
         <img
           src={image}
           alt={title}
+          loading="lazy"
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
-
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-
         <div className="absolute inset-0 p-8 flex flex-col justify-between">
           <div className="flex items-start justify-between">
             <span className={`px-4 py-1.5 rounded-full text-xs font-medium backdrop-blur-md ${getCategoryClass(category)} bg-opacity-80`}>
@@ -48,17 +48,17 @@ const ArticleCard = ({ id, title, category, date, image, size = "small" }: Artic
               {date}
             </span>
           </div>
-
           <div className="flex items-end justify-between gap-4">
             <div className="flex-1">
-              <span className="text-white/50 text-xs font-medium tracking-wider block mb-3">{id}</span>
+              {index !== undefined && (
+                <span className="text-white/50 text-xs font-medium tracking-wider block mb-3">{index}</span>
+              )}
               <h3 className="text-white text-xl md:text-2xl lg:text-3xl leading-tight tracking-tight">
                 {title}
               </h3>
             </div>
           </div>
         </div>
-
         <div className="absolute bottom-6 right-6 floating-button">
           <ArrowUpRight className="w-5 h-5" />
         </div>
