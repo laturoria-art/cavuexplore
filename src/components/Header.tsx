@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, X, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const navigate = useNavigate();
+  const { session, isAdmin } = useAuth();
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
@@ -83,8 +85,16 @@ const Header = () => {
               )}
             </button>
 
-            <Button className="hidden md:flex bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-2 hover:scale-105 transition-all">
-              Únete ahora
+            {isAdmin && (
+              <Link to="/admin" className="hidden md:inline-flex text-sm font-medium hover:bg-muted/60 rounded-full px-4 py-2 transition-all">
+                Admin
+              </Link>
+            )}
+            <Button
+              onClick={() => navigate(session ? "/admin" : "/auth")}
+              className="hidden md:flex bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-2 hover:scale-105 transition-all"
+            >
+              {session ? "Mi panel" : "Únete ahora"}
             </Button>
 
             <button
