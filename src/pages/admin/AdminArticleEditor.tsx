@@ -19,7 +19,7 @@ interface FormState {
   cover_image_url: string;
   category_id: string;
   author_id: string;
-  status: "draft" | "published" | "archived";
+  status: "draft" | "published";
   is_featured: boolean;
   read_time_minutes: string;
   tags: string;
@@ -57,7 +57,7 @@ const AdminArticleEditor = () => {
     (async () => {
       const { data, error } = await supabase.from("articles").select("*").eq("id", id).maybeSingle();
       if (error || !data) { toast.error("No se pudo cargar"); return; }
-      const c = (data.content as ArticleContent) || { introduction: "", sections: [], conclusion: "" };
+      const c = (data.content as unknown as ArticleContent) || { introduction: "", sections: [], conclusion: "" };
       setForm({
         slug: data.slug, title: data.title, subtitle: data.subtitle ?? "",
         excerpt: data.excerpt ?? "", cover_image_url: data.cover_image_url ?? "",
@@ -188,10 +188,9 @@ const AdminArticleEditor = () => {
         <div className="grid md:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium mb-2">Estado</label>
-            <select value={form.status} onChange={(e) => updateField("status", e.target.value as any)} className={input}>
+            <select value={form.status} onChange={(e) => updateField("status", e.target.value as "draft" | "published")} className={input}>
               <option value="draft">Borrador</option>
               <option value="published">Publicado</option>
-              <option value="archived">Archivado</option>
             </select>
           </div>
           <div>

@@ -22,7 +22,7 @@ export interface ArticleRow {
   cover_image_url: string | null;
   category_id: string | null;
   author_id: string | null;
-  status: "draft" | "published" | "archived";
+  status: "draft" | "published";
   is_featured: boolean;
   read_time_minutes: number | null;
   tags: string[];
